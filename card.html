@@ -39,6 +39,8 @@ body.public-mode .stage{padding:0}
 .pubFootLive{display:none}
 body.public-mode .pubFootLive{display:inline}
 .foot .pubLive{font-size:11.5px;color:var(--c-muted)}
+.foot .backlink{margin-left:10px;color:var(--jade,#1F7A52);text-decoration:none;font-weight:600}
+.foot .backlink:hover{text-decoration:underline}
 .foot .linkbtn{font-size:11.5px;margin-left:8px}
 .modalOverlay{position:fixed;inset:0;background:rgba(10,20,15,.55);display:flex;align-items:center;justify-content:center;padding:24px;z-index:50}
 .modalOverlay[hidden]{display:none}
@@ -959,7 +961,7 @@ function buildCard(rec,a){
 
   var tickAcc=a.rich?T.rust:T.jade;
   var tickHtml;
-  if(ROWS.length>1){
+  if(ROWS.length>1&&!PUBLIC_MODE){
     var tickOpts=ROWS.map(function(r,i){return '<option value="'+i+'"'+(i===selectedIdx?' selected':'')+'>'+esc(r.rec.ticker||r.label)+'</option>';}).join('');
     tickHtml='<div class="tick hasSelect" style="--tick-acc:'+tickAcc+'"><span class="dot"></span><select id="tickPick" aria-label="Switch company">'+tickOpts+'</select></div>';
   }else{
@@ -1077,7 +1079,9 @@ function buildCard(rec,a){
        '</details>';
   }
 
-  h+='<footer class="foot"><span>Model output, not investment advice \u2014 dividend safety and payout ratio deserve their own check.</span><span>Rendered '+esc(new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}))+'<span class="pubFootLive"><span class="pubLive" id="pubLiveStamp" hidden></span><button type="button" class="linkbtn" id="pubRefresh" hidden>Refresh</button></span></span></footer>';
+  h+='<footer class="foot"><span>Model output, not investment advice \u2014 dividend safety and payout ratio deserve their own check.'+
+     (PUBLIC_MODE?' <a class="backlink" href="'+esc(BACK_URL)+'">\u2190 More at Stardust Capital</a>':'')+
+     '</span><span>Rendered '+esc(new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}))+'<span class="pubFootLive"><span class="pubLive" id="pubLiveStamp" hidden></span><button type="button" class="linkbtn" id="pubRefresh" hidden>Refresh</button></span></span></footer>';
   return h;
 }
 
@@ -1241,6 +1245,19 @@ function wireGrowthFan(rec){
     wireHold(rateDown,-0.1);
   }
 }
+/* Keeps the address bar's ?ticker= in sync with whatever is currently
+   shown, so a link copied straight from the bar always reproduces the
+   same card. Only on the published page (PUBLIC_MODE) — the editor
+   shouldn't rewrite its own URL while you're pasting/testing data. */
+function updateUrlTicker(ticker){
+  if(!PUBLIC_MODE||!ticker)return;
+  try{
+    var params=new URLSearchParams(window.location.search);
+    params.set('ticker',ticker.trim().toUpperCase());
+    var newUrl=window.location.pathname+'?'+params.toString()+window.location.hash;
+    window.history.replaceState(null,'',newUrl);
+  }catch(e){/* ignore */}
+}
 function renderCurrent(){
   var card=$('#card');
   applyThemeVars();
@@ -1256,6 +1273,7 @@ function renderCurrent(){
   wirePriceInput();
   wireTickPick();
   wirePubFooter();
+  updateUrlTicker(rec.ticker);
 }
 function wirePubFooter(){
   updatePubBarVisibility();
@@ -1533,6 +1551,7 @@ function initialFullFetch(){
 
 var LIVE_URL_STOCKS="https://gist.githubusercontent.com/feurgabi-create/8447d691745fbf8080f38a0f9ef35fc5/raw/stocks.csv";
 var LIVE_URL_REITS="https://gist.githubusercontent.com/feurgabi-create/8447d691745fbf8080f38a0f9ef35fc5/raw/reits.csv";
+var BACK_URL="https://www.stardustcapital.net/dividend-framework";
 /* Baked-in defaults for the admin tool's own Live Source boxes — so a
    fresh download of this file (new browser, new machine, cleared
    storage) still starts with the real Gist URLs pre-filled instead of
@@ -1717,10 +1736,18 @@ async function exportPng(){
    that ticker instead of defaulting to row 0. Used by the heat map tool
    so clicking a tile lands straight on the right card. Silently does
    nothing if the param is missing or no row matches. */
+/* Captured once, before anything on the page has a chance to rewrite the
+   address bar (renderCurrent() now does that live as you switch tickers —
+   see updateUrlTicker). Re-reading window.location.search inside this
+   function instead would pick up the page's OWN latest rewrite rather
+   than what the link actually asked for. */
+var INITIAL_TICKER_PARAM=(function(){
+  try{return new URLSearchParams(window.location.search).get('ticker')||'';}
+  catch(e){return '';}
+})();
 function selectTickerFromUrl(){
   try{
-    var params=new URLSearchParams(window.location.search);
-    var t=(params.get('ticker')||'').trim().toUpperCase();
+    var t=INITIAL_TICKER_PARAM.trim().toUpperCase();
     if(!t)return;
     for(var i=0;i<ROWS.length;i++){
       if(ROWS[i].rec&&ROWS[i].rec.ticker&&ROWS[i].rec.ticker.trim().toUpperCase()===t){
@@ -1735,7 +1762,12 @@ function selectTickerFromUrl(){
   }catch(e){/* ignore */}
 }
 
-if(PUBLIC_MODE)document.body.classList.add('public-mode');
+if(PUBLIC_MODE){
+  document.body.classList.add('public-mode');
+  /* Published embeds always render light, regardless of the visitor's
+     device dark-mode setting, so the tool matches the website around it. */
+  document.documentElement.setAttribute('data-theme','light');
+}
 if(SAMPLE_DATA_TYPE==='reits'){var dtr=$('#dtReits');if(dtr)dtr.checked=true;}
 wire();
 $('#raw').value=SAMPLE;
