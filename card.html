@@ -79,6 +79,9 @@ h2 .hint{text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)
   box-shadow:0 1px 0 rgba(0,0,0,.04),0 18px 50px -18px rgba(10,25,20,.28);}
 .empty{padding:100px 10px;text-align:center;color:var(--c-muted);font:16px/1.6 var(--serif)}
 
+.backBar{display:flex;justify-content:center;margin-bottom:14px}
+.backBar a{display:inline-flex;align-items:center;gap:6px;font:600 13.5px var(--mono,inherit);color:var(--jade,#1F7A52);background:var(--jade-soft,#E4F1E9);border:1px solid var(--jade,#1F7A52);border-radius:999px;padding:7px 16px;text-decoration:none;letter-spacing:.01em}
+.backBar a:hover{text-decoration:underline}
 .mast{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px 20px;border-bottom:1px solid var(--c-rule);padding-bottom:18px}
 .mast .name{font:500 clamp(24px,3.4vw,34px)/1.1 var(--serif);letter-spacing:-.01em;margin:0;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
@@ -967,7 +970,8 @@ function buildCard(rec,a){
   }else{
     tickHtml='<div class="tick" style="--tick-acc:'+tickAcc+'"><span class="dot"></span>'+esc(a.ticker)+'</div>';
   }
-  var h='<header class="mast"><div><h2 class="name" title="'+esc(a.name||'')+'">'+esc(shortCompanyName(a.name)||'\u2013')+'</h2><div class="exch">Dividend Framework<span class="sep"></span>Sigma valuation card</div>'+
+  var h=(PUBLIC_MODE?'<div class="backBar"><a href="'+esc(BACK_URL)+'">\u2190 Back to Stardust Capital</a></div>':'');
+  h+='<header class="mast"><div><h2 class="name" title="'+esc(a.name||'')+'">'+esc(shortCompanyName(a.name)||'\u2013')+'</h2><div class="exch">Dividend Framework<span class="sep"></span>Sigma valuation card</div>'+
     (a.streak?'<div class="streakBadge'+(a.streak.tier?' tiered':'')+'"><span class="dot"></span>'+esc(a.streak.text)+'</div>':'')+
     '</div>'+
     '<div class="pricebox">'+tickHtml+
@@ -1079,9 +1083,7 @@ function buildCard(rec,a){
        '</details>';
   }
 
-  h+='<footer class="foot"><span>Model output, not investment advice \u2014 dividend safety and payout ratio deserve their own check.'+
-     (PUBLIC_MODE?' <a class="backlink" href="'+esc(BACK_URL)+'">\u2190 More at Stardust Capital</a>':'')+
-     '</span><span>Rendered '+esc(new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}))+'<span class="pubFootLive"><span class="pubLive" id="pubLiveStamp" hidden></span><button type="button" class="linkbtn" id="pubRefresh" hidden>Refresh</button></span></span></footer>';
+  h+='<footer class="foot"><span>Model output, not investment advice \u2014 dividend safety and payout ratio deserve their own check.</span><span>Rendered '+esc(new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}))+'<span class="pubFootLive"><span class="pubLive" id="pubLiveStamp" hidden></span><button type="button" class="linkbtn" id="pubRefresh" hidden>Refresh</button></span></span></footer>';
   return h;
 }
 
