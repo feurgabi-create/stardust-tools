@@ -79,8 +79,8 @@ h2 .hint{text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)
   box-shadow:0 1px 0 rgba(0,0,0,.04),0 18px 50px -18px rgba(10,25,20,.28);}
 .empty{padding:100px 10px;text-align:center;color:var(--c-muted);font:16px/1.6 var(--serif)}
 
-.backBar{display:flex;justify-content:center;margin-bottom:14px}
-.backBar a{font:600 14px var(--mono,inherit);color:var(--jade,#1F7A52);text-decoration:underline;text-underline-offset:3px;letter-spacing:.01em}
+.backBar{display:flex;justify-content:flex-start;margin-bottom:14px}
+.backBar a{font:600 12.5px var(--mono,inherit);color:var(--jade,#1F7A52);text-decoration:underline;text-underline-offset:3px;letter-spacing:.01em}
 .backBar a:hover{text-decoration-thickness:2px}
 .mast{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px 20px;border-bottom:1px solid var(--c-rule);padding-bottom:18px}
 .mast .name{font:500 clamp(24px,3.4vw,34px)/1.1 var(--serif);letter-spacing:-.01em;margin:0;
@@ -296,7 +296,7 @@ h2 .hint{text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)
     <p class="tag">Builds the sidebar-free page for every row currently loaded, and copies it. With a live source above, the published page re-fetches the sheet itself every ~15 minutes; otherwise it's a one-time snapshot of what's loaded now.</p>
     <label class="radioOpt" style="display:flex;margin-bottom:10px">
       <input type="checkbox" id="chkStandalone">
-      <span>Standalone share link (hides the ticker dropdown, adds a "← Back to Stardust Capital" link) — check this only for the GitHub single-ticker card. Leave unchecked for your normal website embed (keeps the dropdown, no back-link).</span>
+      <span>Standalone share link (hides the ticker dropdown, adds a "← Back to Stardust Capital / Directory" link) — check this only for the GitHub single-ticker card. Leave unchecked for your normal website embed (keeps the dropdown, no back-link).</span>
     </label>
     <div class="btnrow">
       <button class="btn primary" id="btnPublish">Copy website code</button>
@@ -974,7 +974,7 @@ function buildCard(rec,a){
   }else{
     tickHtml='<div class="tick" style="--tick-acc:'+tickAcc+'"><span class="dot"></span>'+esc(a.ticker)+'</div>';
   }
-  var h=((PUBLIC_MODE&&STANDALONE_CARD)?'<div class="backBar"><a href="'+esc(BACK_URL)+'">\u2190 Back to Stardust Capital</a></div>':'');
+  var h=((PUBLIC_MODE&&STANDALONE_CARD)?'<div class="backBar"><a href="'+esc(BACK_URL)+'">\u2190 Back to Stardust Capital / Directory</a></div>':'');
   h+='<header class="mast"><div><h2 class="name" title="'+esc(a.name||'')+'">'+esc(shortCompanyName(a.name)||'\u2013')+'</h2><div class="exch">Dividend Framework<span class="sep"></span>Sigma valuation card</div>'+
     (a.streak?'<div class="streakBadge'+(a.streak.tier?' tiered':'')+'"><span class="dot"></span>'+esc(a.streak.text)+'</div>':'')+
     '</div>'+
@@ -1564,7 +1564,7 @@ function initialFullFetch(){
 
 var LIVE_URL_STOCKS="https://gist.githubusercontent.com/feurgabi-create/8447d691745fbf8080f38a0f9ef35fc5/raw/stocks.csv";
 var LIVE_URL_REITS="https://gist.githubusercontent.com/feurgabi-create/8447d691745fbf8080f38a0f9ef35fc5/raw/reits.csv";
-var BACK_URL="https://www.stardustcapital.net/dividend-framework";
+var BACK_URL="https://www.stardustcapital.net/dividend-framework/directory";
 /* Only the GitHub single-ticker share card should hide the dropdown and
    show the back-link — the regular website embed (Google Sites) should
    keep browsing all rows via the dropdown, with no back-link (it's
