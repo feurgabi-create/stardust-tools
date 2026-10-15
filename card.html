@@ -1038,6 +1038,7 @@ function buildCard(rec,a){
     ['Dividend / share',fmtMoney(rec.divDollar)],
     ['Current yield',fmtPct(rec.yield)],
     ['10y average yield',fmtPct(rec.avg10y)],
+    ['Max yield',fmtPct(rec.avMaxY),'Max yield, 10 years average of its most extreme yields.'],
     ['Div growth, past 10y',fmtPct(rec.divGrowth10y)],
     ['Recent div growth trend',divTrend(rec)||'\u2013']
   ].filter(function(p){return p[1]!=='\u2013';});
@@ -1047,21 +1048,21 @@ function buildCard(rec,a){
     ['P/E',rec.pe!==null?fmtNum(rec.pe,1):'\u2013'],
     ['P/AFFO',rec.pAffo!==null?fmtNum(rec.pAffo,1):'\u2013'],
     ['Payout ratio',fmtPct(rec.payoutRatio)],
-    ['Projected yield on cost, 10y',fmtPct(projYoc10(rec))],
-    ['Max yield',fmtPct(rec.avMaxY),'Max yield, 10 years average of its most extreme yields.']
+    ['Projected yield on cost, 10y',fmtPct(projYoc10(rec))]
   ].filter(function(p){return p[1]!=='\u2013';});
   if(a.streak)histStats.push(['Consecutive dividend growth',a.streak.years+' years'+(a.streak.tier?' — '+a.streak.tier:'')]);
 
+  function statRow(p){
+    if(p[0]==='Max yield'){
+      return '<div class="statBlock"><div class="stat noBorder"><span class="l">'+esc(p[0])+'</span><span class="v">'+esc(p[1])+'</span></div>'+
+        '<p class="statNote">10 years average of its most extreme yields.</p></div>';
+    }
+    return '<div class="stat"><span class="l">'+esc(p[0])+'</span><span class="v">'+esc(p[1])+'</span></div>';
+  }
   if(divStats.length||histStats.length){
     h+='<details class="sec" open><summary><h3>Dividend and sigma detail</h3></summary><div class="grid2">'+
-      '<div>'+divStats.map(function(p){return '<div class="stat"><span class="l">'+esc(p[0])+'</span><span class="v">'+esc(p[1])+'</span></div>';}).join('')+'</div>'+
-      '<div>'+histStats.map(function(p){
-        if(p[0]==='Max yield'){
-          return '<div class="statBlock"><div class="stat noBorder"><span class="l">'+esc(p[0])+'</span><span class="v">'+esc(p[1])+'</span></div>'+
-            '<p class="statNote">10 years average of its most extreme yields.</p></div>';
-        }
-        return '<div class="stat"><span class="l">'+esc(p[0])+'</span><span class="v">'+esc(p[1])+'</span></div>';
-      }).join('')+'</div>'+
+      '<div>'+divStats.map(statRow).join('')+'</div>'+
+      '<div>'+histStats.map(statRow).join('')+'</div>'+
     '</div>'+
     '</details>';
   }
