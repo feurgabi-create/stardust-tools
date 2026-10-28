@@ -1653,8 +1653,8 @@ function initialFullFetch(){
   });
 }
 
-var LIVE_URL_STOCKS="https://gist.githubusercontent.com/feurgabi-create/8447d691745fbf8080f38a0f9ef35fc5/raw/stocks.csv";
-var LIVE_URL_REITS="https://gist.githubusercontent.com/feurgabi-create/8447d691745fbf8080f38a0f9ef35fc5/raw/reits.csv";
+var LIVE_URL_STOCKS="https://gist.githubusercontent.com/feurgabi-create/94abe3b6de993ea6a6e888053b242b82/raw/stocks.csv";
+var LIVE_URL_REITS="https://gist.githubusercontent.com/feurgabi-create/94abe3b6de993ea6a6e888053b242b82/raw/reits.csv";
 var BACK_URL=LINKS.back;
 /* Only the GitHub single-ticker share card should hide the dropdown and
    show the back-link — the regular website embed (Google Sites) should
@@ -1668,8 +1668,8 @@ var STANDALONE_CARD=true;
    blank. Only used by loadLiveUrls() below, in the admin tool itself;
    has nothing to do with LIVE_URL_STOCKS/LIVE_URL_REITS above, which
    are only ever set on a PUBLISHED page at publish time. */
-var DEFAULT_LIVE_URL_STOCKS="https://gist.githubusercontent.com/feurgabi-create/8447d691745fbf8080f38a0f9ef35fc5/raw/stocks.csv";
-var DEFAULT_LIVE_URL_REITS="https://gist.githubusercontent.com/feurgabi-create/8447d691745fbf8080f38a0f9ef35fc5/raw/reits.csv";
+var DEFAULT_LIVE_URL_STOCKS="https://gist.githubusercontent.com/feurgabi-create/94abe3b6de993ea6a6e888053b242b82/raw/stocks.csv";
+var DEFAULT_LIVE_URL_REITS="https://gist.githubusercontent.com/feurgabi-create/94abe3b6de993ea6a6e888053b242b82/raw/reits.csv";
 var SAMPLE_DATA_TYPE="stocks";
 /* Per-row schema tags for the embedded sample/snapshot, as a JSON array
    string ('["stocks","reits",...]') — null means "every row uses
@@ -1678,7 +1678,7 @@ var SAMPLE_DATA_TYPE="stocks";
    each row parsed with its own schema, so the publish step fills this
    in whenever the loaded rows aren't all one type. */
 var SAMPLE_TAGS="";
-var SAMPLE="NIKE, INC. (XNYS:NKE)	 $36.13 	 $35.35 	1.64	4.54%	1.54%	1.08%	10.02	2.77	NKE	⇧ .052	51.16	 $106.69 	70.58%	24yrs, almost div arist, payout ratio 103% so carefull!!+ the woke headwinds are real and in china too, where they lost sales since 2021, about 30% and sliding. Bad management, bad politics, bad china relations, everywhere you look just negatives, low 30s very possible, and div is at risk obv, on a bad macro backdrop reccesion and such might be in real trouble, also realy high PEs at 27, more than the competition, which apparently is eating their lunch. might see a 3 sigma. But most concerning is the dividend safety, and it wont stay here too long if things keep getting worse	7.32%	11.79%	17.2	50.22	-28%	2.88	1.77%	0.96%	156.45%	54.38%	 $92.66 	 $73.01 	 $53.36 	195.29%	4.26	17.27	33.89	Now: -0.46% | 10Y: -1.36% | Diff: +0.90%	24";
+var SAMPLE="NIKE, INC. (XNYS:NKE)	 $36.13 	 $35.35 	1.64	4.54%	1.54%	1.08%	10.02	2.77	NKE	⇧ .052	51.16	 $106.69 	70.58%		7.32%	11.79%	17.2	50.22	-28%	2.88	1.77%	0.96%	156.45%	54.38%	 $92.66 	 $73.01 	 $53.36 	195.29%	4.26	17.27	33.89	Now: -0.46% | 10Y: -1.36% | Diff: +0.90%	24";
 
 /* Base64-encoded copy of this page with PUBLIC_MODE flipped on and the
    sample row swapped for a %%SAMPLE_DATA%% placeholder — this is what
