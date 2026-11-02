@@ -306,7 +306,7 @@ h2 .hint{text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)
     <p class="tag">Builds the sidebar-free page for every row currently loaded, and copies it. With a live source above, the published page re-fetches the sheet itself every ~15 minutes; otherwise it's a one-time snapshot of what's loaded now.</p>
     <label class="radioOpt" style="display:flex;margin-bottom:10px">
       <input type="checkbox" id="chkStandalone">
-      <span>Standalone share link (hides the ticker dropdown, adds a "← Back to Yield Sigma / Directory" link) — check this only for the GitHub single-ticker card. Leave unchecked for your normal website embed (keeps the dropdown, no back-link).</span>
+      <span>Standalone share link (hides the ticker dropdown, adds a "← Back to Yield Sigma" link) — check this only for the GitHub single-ticker card. Leave unchecked for your normal website embed (keeps the dropdown, no back-link).</span>
     </label>
     <div class="btnrow">
       <button class="btn primary" id="btnPublish">Copy website code</button>
@@ -1006,7 +1006,7 @@ function buildCard(rec,a){
   }else{
     tickHtml='<div class="tick" style="--tick-acc:'+tickAcc+'"><span class="dot"></span>'+esc(a.ticker)+'</div>';
   }
-  var h=((PUBLIC_MODE&&STANDALONE_CARD)?'<div class="backBar"><a href="'+esc(BACK_URL)+'">\u2190 Back to Yield Sigma / Directory</a></div>':'');
+  var h=((PUBLIC_MODE&&STANDALONE_CARD)?'<div class="backBar"><a href="'+esc(BACK_URL)+'">\u2190 Back to Yield Sigma</a></div>':'');
   h+='<header class="mast"><div><h2 class="name" title="'+esc(a.name||'')+'">'+esc(shortCompanyName(a.name)||'\u2013')+'</h2><div class="exch">Dividend Framework<span class="sep"></span>Yield Sigma™ valuation card</div><div class="labsBy">from <a href="'+esc(LINKS.labs)+'" target="_blank" rel="noopener">Stardust Capital Labs</a></div>'+
     (a.streak?'<div class="streakBadge'+(a.streak.tier?' tiered':'')+'"><span class="dot"></span>'+esc(a.streak.text)+'</div>':'')+
     '</div>'+
