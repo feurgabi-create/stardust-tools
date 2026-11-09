@@ -79,9 +79,18 @@ h2 .hint{text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)
   box-shadow:0 1px 0 rgba(0,0,0,.04),0 18px 50px -18px rgba(10,25,20,.28);}
 .empty{padding:100px 10px;text-align:center;color:var(--c-muted);font:16px/1.6 var(--serif)}
 
-.backBar{display:flex;justify-content:flex-start;margin-bottom:14px}
+.backBar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
 .backBar a{font:600 12.5px var(--mono,inherit);color:var(--jade,#1F7A52);text-decoration:underline;text-underline-offset:3px;letter-spacing:.01em}
 .backBar a:hover{text-decoration-thickness:2px}
+.backBar .moreLink{font:600 12.5px var(--mono,inherit);color:var(--jade,#1F7A52);text-decoration:underline;text-underline-offset:3px;letter-spacing:.01em;background:none;border:0;padding:0;cursor:pointer}
+.backBar .moreLink:hover{text-decoration-thickness:2px}
+html.ysOvOpen,html.ysOvOpen body{overflow:hidden}
+.ysOv{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;background:var(--c-paper,#fbfaf6);transform-origin:left center;animation:ysTurn .38s cubic-bezier(.2,.7,.2,1)}
+@keyframes ysTurn{from{opacity:0;transform:perspective(1600px) rotateY(10deg) translateX(40px)}to{opacity:1;transform:none}}
+.ysOvBar{flex:none;display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--c-rule,#d9ddd5);background:var(--c-paper,#fbfaf6)}
+.ysOvBar .subpill{cursor:pointer}
+.ysOvTitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 12px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--c-muted,#5d6b62);text-align:right}
+.ysOv iframe{flex:1;width:100%;border:0;background:#fff}
 .mast .labsBy{font-size:12px;color:var(--c-muted);margin-top:3px}
 .mast .labsBy a,.mast .labsBy a:visited{color:var(--jade,#1F7A52);text-decoration:none;font-weight:600}
 .mast .labsBy a:hover{text-decoration:underline}
@@ -1462,7 +1471,7 @@ function buildCard(rec,a){
   }else{
     tickHtml='<div class="tick" style="--tick-acc:'+tickAcc+'"><span class="dot"></span>'+esc(a.ticker)+'</div>';
   }
-  var h=((PUBLIC_MODE&&STANDALONE_CARD)?'<div class="backBar"><a href="'+esc(BACK_URL)+'">\u2190 Back to Yield Sigma</a></div>':'');
+  var h=((PUBLIC_MODE&&STANDALONE_CARD)?'<div class="backBar"><a href="'+esc(BACK_URL)+'">\u2190 Back to Yield Sigma</a><button type="button" class="moreLink" id="ysMore">More stocks</button></div>':'');
   h+='<header class="mast"><div><h2 class="name" title="'+esc(a.name||'')+'">'+esc(shortCompanyName(a.name)||'\u2013')+'</h2><div class="exch">Yield Sigma™ valuation card</div><div class="labsBy">from <a href="'+esc(LINKS.labs)+'" target="_blank" rel="noopener">Stardust Capital Labs</a></div>'+
     (a.streak?'<div class="streakBadge'+(a.streak.tier?' tiered':'')+'"><span class="dot"></span>'+esc(a.streak.text)+'</div>':'')+
     '</div>'+
@@ -1861,9 +1870,43 @@ function renderCurrent(){
   ysHistKick(rec,a);
   wirePriceInput();
   wireTickPick();
+  var ym=$('#ysMore');if(ym)ym.addEventListener('click',function(){ysPage('https://tools.yieldsigma.com/directory.html?embed=1','Directory');});
   wirePubFooter();
   updateUrlTicker(rec.ticker);
 }
+/* "More stocks": the Directory turns over the card; a stock picked there loads on this card */
+var ysOvEl=null;
+function ysPage(url,title){
+  ysClosePage();
+  var ov=document.createElement('div');
+  ov.className='ysOv';ov.setAttribute('role','dialog');ov.setAttribute('aria-label',title);
+  var c=$('#card');if(c&&c.getAttribute('style'))ov.setAttribute('style',c.getAttribute('style'));
+  ov.innerHTML='<div class="ysOvBar"><button type="button" class="subpill" id="ysOvBack">← Back to the card</button><span class="ysOvTitle">'+esc(title)+'</span></div>'+
+    '<iframe src="'+esc(url)+'" title="'+esc(title)+'"></iframe>';
+  document.body.appendChild(ov);ysOvEl=ov;
+  document.documentElement.classList.add('ysOvOpen');
+  var b=ov.querySelector('#ysOvBack');b.addEventListener('click',ysClosePage);b.focus();
+}
+function ysClosePage(){
+  if(!ysOvEl)return;
+  ysOvEl.parentNode.removeChild(ysOvEl);ysOvEl=null;
+  document.documentElement.classList.remove('ysOvOpen');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ysOvEl)ysClosePage();});
+window.addEventListener('message',function(e){
+  if(!ysOvEl)return;
+  var fr=ysOvEl.querySelector('iframe');if(!fr||e.source!==fr.contentWindow)return;
+  var d=e.data;if(!d||typeof d.ysPick!=='string')return;
+  var t=d.ysPick.trim().toUpperCase();
+  ysClosePage();
+  for(var i=0;i<ROWS.length;i++){
+    if(ROWS[i].rec&&String(ROWS[i].rec.ticker||'').trim().toUpperCase()===t){
+      selectedIdx=i;priceOverride=null;
+      var p=$('#pick'),pp=$('#pubPick');if(p)p.value=String(i);if(pp)pp.value=String(i);
+      renderCurrent();window.scrollTo(0,0);return;
+    }
+  }
+});
 function wirePubFooter(){
   updatePubBarVisibility();
   if(LIVE_URL_STOCKS||LIVE_URL_REITS)setLiveStamp(liveStale);
